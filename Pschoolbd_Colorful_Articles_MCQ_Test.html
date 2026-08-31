@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pschoolbd — Article MCQ Test</title>
+<style>
+*{box-sizing:border-box}
+:root{--primary:#2563eb;--primary2:#ec4899;--ink:#172033;--muted:#667085;--card:#fff;--bg1:#dbeafe;--bg2:#fce7f3;--green:#16a34a;--red:#dc2626}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:linear-gradient(135deg,#dbeafe 0%,#ede9fe 45%,#fce7f3 100%);min-height:100vh}
+.page{min-height:100vh;padding:28px 16px 50px}
+.container{max-width:900px;margin:auto}
+.start-wrap{min-height:calc(100vh - 60px);display:flex;align-items:center;justify-content:center}
+.start-card,.result-card{background:rgba(255,255,255,.96);border-radius:24px;box-shadow:0 16px 45px rgba(31,41,55,.12);padding:34px}
+.brand{font-size:28px;font-weight:900;letter-spacing:1px;color:#2563eb;text-align:center;margin-bottom:18px}
+.title{font-size:34px;text-align:center;margin:8px 0 12px}
+.subtitle{text-align:center;color:var(--muted);margin:0 0 26px}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 26px}
+.meta div{background:linear-gradient(135deg,#eff6ff,#faf5ff);border:1px solid #dbeafe;border-radius:14px;padding:15px;text-align:center}
+.meta strong{display:block;font-size:20px;margin-top:4px}
+label{font-weight:700;display:block;margin-bottom:8px}
+input{width:100%;padding:15px 16px;border:2px solid #e5e7eb;border-radius:13px;font-size:16px;outline:none}
+input:focus{border-color:var(--primary)}
+button{border:0;border-radius:13px;padding:15px 20px;font-weight:800;font-size:16px;cursor:pointer}
+.start-btn,.submit-btn{width:100%;color:#fff;background:linear-gradient(135deg,#2563eb,#7c3aed,#ec4899);box-shadow:0 8px 20px rgba(79,70,229,.25)}
+.start-btn{margin-top:18px}
+.test-header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid #e5e7eb;padding:10px 0 12px;margin-bottom:18px}
+.timer{max-width:900px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 16px;font-weight:800}
+.timer-badge{background:#111827;color:white;border-radius:12px;padding:10px 14px;min-width:92px;text-align:center}
+.question-card{background:var(--card);border-radius:20px;padding:22px;margin:16px 0;box-shadow:0 8px 25px rgba(31,41,55,.08);border:1px solid rgba(229,231,235,.9)}
+.qnum{font-weight:900;color:var(--primary);margin-bottom:9px}
+.question{font-size:19px;font-weight:700;line-height:1.5;margin-bottom:15px}
+.option{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:linear-gradient(135deg,#ffffff,#f8fafc);border:2px solid #dbeafe;color:var(--ink);margin:9px 0;padding:14px 15px;transition:.18s}
+.option:hover{border-color:#a5b4fc;background:#eef2ff}
+.letter{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#c7d2fe,#fbcfe8);display:flex;align-items:center;justify-content:center;font-weight:900;flex:none}
+.option.selected{background:linear-gradient(135deg,#dbeafe,#f3e8ff);border-color:#7c3aed;color:#4c1d95;font-weight:800;transform:translateY(-1px)}
+.option.selected .letter{background:var(--primary);color:white}
+.submit-wrap{margin:28px 0 8px}
+.hidden{display:none!important}
+.result-card{text-align:center}
+.score{font-size:52px;font-weight:900;color:var(--primary);margin:12px 0}
+.grade{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:999px;padding:9px 18px;font-weight:900}
+.success{background:#ecfdf3;color:#166534;border:1px solid #bbf7d0;border-radius:15px;padding:18px;margin-top:20px;font-weight:700}
+.incorrect{margin-top:25px;text-align:left}
+.incorrect h2{font-size:22px}
+.wrong-item{background:#fff;border:1px solid #fecaca;border-left:5px solid var(--red);border-radius:14px;padding:16px;margin:12px 0}
+.wrong-q{font-weight:800;margin-bottom:9px}
+.user-ans{color:var(--red);margin:5px 0}
+.correct-ans{color:var(--green);font-weight:700}
+.note{font-size:13px;color:var(--muted);text-align:center;margin-top:15px}
+@media(max-width:600px){
+.page{padding:16px 10px 35px}
+.start-card,.result-card{padding:24px 17px;border-radius:20px}
+.title{font-size:27px}
+.brand{font-size:25px}
+.meta{grid-template-columns:1fr 1fr}
+.question-card{padding:17px;border-radius:17px}
+.question{font-size:17px}
+.option{padding:12px 11px}
+.timer{padding:0 10px;font-size:14px}
+.timer-badge{padding:8px 10px}
+.score{font-size:44px}
+}
+</style>
+</head>
+<body>
+
+<section id="startPage" class="page start-wrap">
+  <div class="container">
+    <div class="start-card">
+      <div class="brand">Pschoolbd</div>
+      <h1 class="title">Articles — MCQ Test</h1>
+      <p class="subtitle">Choose the correct article: <b>a, an,</b> or <b>the</b>.</p>
+      <div class="meta">
+        <div>Total Questions<strong>30</strong></div>
+        <div>Time<strong>10 Minutes</strong></div>
+      </div>
+      <label for="studentName">Student Name</label>
+      <input id="studentName" type="text" placeholder="Enter your name">
+      <button class="start-btn" onclick="startTest()">START TEST</button>
+    </div>
+  </div>
+</section>
+
+<section id="testPage" class="hidden">
+  <div class="test-header">
+    <div class="timer">
+      <span>Pschoolbd • MCQ Test</span>
+      <span id="timer" class="timer-badge">10:00</span>
+    </div>
+  </div>
+  <main class="page">
+    <div id="questions" class="container"></div>
+    <div class="container submit-wrap">
+      <button class="submit-btn" onclick="submitTest()">SUBMIT TEST</button>
+      <p class="note">Check your answers before submitting.</p>
+    </div>
+  </main>
+</section>
+
+<section id="resultPage" class="hidden page">
+  <div class="container">
+    <div class="result-card">
+      <div class="brand">Pschoolbd</div>
+      <h1 class="title">Test Result</h1>
+      <p><b>Student Name:</b> <span id="resultName"></span></p>
+      <div class="score" id="score"></div>
+      <div class="grade" id="grade"></div>
+      <div id="successBox"></div>
+      <div id="incorrect" class="incorrect"></div>
+    </div>
+  </div>
+</section>
+
+<script>
+const questions = [{"q": "This is ___ cat.", "o": ["a", "an", "the"], "a": 0}, {"q": "___ Sun rises in the east.", "o": ["A", "An", "The"], "a": 2}, {"q": "She eats ___ apple every day.", "o": ["a", "an", "the"], "a": 1}, {"q": "He goes to ___ university.", "o": ["a", "an", "the"], "a": 0}, {"q": "___ Padma is a big river.", "o": ["A", "An", "The"], "a": 2}, {"q": "I will return in ___ hour.", "o": ["a", "an", "the"], "a": 1}, {"q": "I saw ___ one-eyed man on the street.", "o": ["a", "an", "the"], "a": 0}, {"q": "I saw a dog. ___ dog was black.", "o": ["A", "An", "The"], "a": 2}, {"q": "He is ___ honest boy.", "o": ["a", "an", "the"], "a": 1}, {"q": "She has ___ red pen.", "o": ["a", "an", "the"], "a": 0}, {"q": "Open ___ door, please.", "o": ["a", "an", "The"], "a": 2}, {"q": "I saw ___ elephant in the zoo.", "o": ["a", "an", "the"], "a": 1}, {"q": "It is ___ European country.", "o": ["a", "an", "the"], "a": 0}, {"q": "We visited ___ Taj Mahal last year.", "o": ["a", "an", "the"], "a": 2}, {"q": "Take ___ umbrella with you.", "o": ["a", "an", "the"], "a": 1}, {"q": "My brother lives in ___ big house.", "o": ["a", "an", "the"], "a": 0}, {"q": "He is ___ best student in class.", "o": ["a", "an", "the"], "a": 2}, {"q": "She gave me ___ orange.", "o": ["a", "an", "the"], "a": 1}, {"q": "He bought ___ useful book.", "o": ["a", "an", "the"], "a": 0}, {"q": "___ Moon shines at night.", "o": ["A", "An", "The"], "a": 2}, {"q": "He is ___ English teacher.", "o": ["a", "an", "the"], "a": 1}, {"q": "I need ___ one-taka note.", "o": ["a", "an", "the"], "a": 0}, {"q": "She plays ___ guitar very well.", "o": ["a", "an", "the"], "a": 2}, {"q": "I saw ___ ant on the wall.", "o": ["a", "an", "the"], "a": 1}, {"q": "There is ___ hospital near my home.", "o": ["a", "an", "the"], "a": 0}, {"q": "___ Bay of Bengal is to the south of Bangladesh.", "o": ["A", "An", "The"], "a": 2}, {"q": "It is ___ ice-cream cone.", "o": ["a", "an", "the"], "a": 1}, {"q": "She wears ___ uniform to school.", "o": ["a", "an", "the"], "a": 0}, {"q": "He is ___ first boy in the exam.", "o": ["a", "an", "the"], "a": 2}, {"q": "He is ___ honourable man.", "o": ["a", "an", "the"], "a": 1}];
+let answers = [];
+let timeLeft = 600;
+let timerInterval = null;
+let submitted = false;
+
+function renderQuestions() {
+  const box = document.getElementById('questions');
+  box.innerHTML = questions.map((item, i) => `
+    <article class="question-card">
+      <div class="qnum">Question ${i+1}</div>
+      <div class="question">${escapeHtml(item.q)}</div>
+      ${item.o.map((opt,j)=>`
+        <button type="button" class="option" id="q${i}o${j}" onclick="selectOption(${i},${j})">
+          <span class="letter">${String.fromCharCode(65+j)}</span>
+          <span>${escapeHtml(opt)}</span>
+        </button>`).join('')}
+    </article>`).join('');
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function selectOption(q, o) {
+  if (submitted) return;
+  answers[q] = o;
+  questions[q].o.forEach((_,j)=>document.getElementById(`q${q}o${j}`).classList.toggle('selected', j===o));
+}
+
+function startTest() {
+  const name = document.getElementById('studentName').value.trim();
+  if (!name) {
+    alert('Please enter the student name.');
+    document.getElementById('studentName').focus();
+    return;
+  }
+  answers = Array(questions.length).fill(null);
+  submitted = false;
+  document.getElementById('startPage').classList.add('hidden');
+  document.getElementById('resultPage').classList.add('hidden');
+  document.getElementById('testPage').classList.remove('hidden');
+  renderQuestions();
+  window.scrollTo(0,0);
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = 600;
+  updateTimer();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimer();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      alert('Time is up. Your test will be submitted automatically.');
+      submitTest(true);
+    }
+  },1000);
+}
+
+function updateTimer() {
+  const min = Math.floor(timeLeft/60).toString().padStart(2,'0');
+  const sec = (timeLeft%60).toString().padStart(2,'0');
+  document.getElementById('timer').textContent = `${min}:${sec}`;
+}
+
+function submitTest(auto=false) {
+  if (submitted) return;
+  if (!auto && !confirm('Are you sure you want to submit the test?')) return;
+  submitted = true;
+  clearInterval(timerInterval);
+
+  let score = 0;
+  questions.forEach((q,i) => { if (answers[i] === q.a) score++; });
+  const total = questions.length;
+  const pct = score/total*100;
+  let grade;
+  if (pct >= 80) grade = 'Excellent — A+';
+  else if (pct >= 70) grade = 'Very Good — A';
+  else if (pct >= 60) grade = 'Good — A-';
+  else if (pct >= 50) grade = 'Satisfactory — B';
+  else if (pct >= 40) grade = 'Pass — C';
+  else grade = 'Needs Improvement — F';
+
+  document.getElementById('resultName').textContent = document.getElementById('studentName').value.trim();
+  document.getElementById('score').textContent = `${score} / ${total}`;
+  document.getElementById('grade').textContent = grade;
+
+  const wrong = questions.map((q,i)=>({q,i})).filter(x=>answers[x.i] !== x.q.a);
+  const inc = document.getElementById('incorrect');
+
+  if (!wrong.length) {
+    document.getElementById('successBox').innerHTML = '<div class="success">🎉 Perfect Score! All answers are correct.</div>';
+    inc.innerHTML = '';
+  } else {
+    document.getElementById('successBox').innerHTML = '';
+    inc.innerHTML = '<h2>Incorrect / Unanswered Answers</h2>' + wrong.map(x => {
+      const user = x.q.o[answers[x.i]] ?? 'Unanswered';
+      const correct = x.q.o[x.q.a];
+      return `<div class="wrong-item">
+        <div class="wrong-q">${x.i+1}. ${escapeHtml(x.q.q)}</div>
+        <div class="user-ans"><b>User's Answer:</b> ${escapeHtml(user)}</div>
+        <div class="correct-ans"><b>Correct Answer:</b> ${escapeHtml(correct)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('testPage').classList.add('hidden');
+  document.getElementById('resultPage').classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
