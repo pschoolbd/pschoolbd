@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P School BD | Interactive MCQ Quiz</title>
+<style>
+:root{--navy:#173b68;--blue:#2468b4;--pale:#eef5ff;--ink:#1d2939;--muted:#667085;--green:#16834a;--red:#c93636;--yellow:#a66a00}
+*{box-sizing:border-box}
+body{margin:0;background:#f3f6fb;color:var(--ink);font-family:"Noto Sans Bengali","Hind Siliguri",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55}
+.wrap{width:min(760px,100%);margin:0 auto;padding:16px}
+.sticky-shell{position:sticky;top:0;z-index:5;background:#f3f6fb;padding:0 0 5px;}
+header{background:linear-gradient(135deg,#173b68,#2877bd);color:#fff;padding:22px 18px;border-radius:18px;text-align:center;box-shadow:0 8px 22px #173b6822}
+header h1{font-size:clamp(21px,5vw,29px);margin:0 0 5px}
+.brand{font-size:15px;letter-spacing:.4px;opacity:.95}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:16px 2px}
+.timer{background:#fff;border:1px solid #d9e3f0;border-radius:12px;padding:9px 14px;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums}
+.timer.warning{color:#c62828;border-color:#efb4b4;background:#fff1f1}
+.progress{font-size:13px;color:var(--muted)}
+.question{background:#fff;border:1px solid #e1e8f0;border-radius:15px;padding:17px;margin:13px 0;box-shadow:0 3px 12px #172b4d08}
+.qhead{font-weight:800;color:var(--blue);font-size:14px;margin-bottom:7px}
+.qtext{font-size:17px;font-weight:650;margin-bottom:12px}
+.options{display:grid;gap:9px}
+.option{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;border:1.5px solid #dbe4ef;background:#fbfdff;border-radius:11px;padding:11px 12px;font:inherit;color:var(--ink);cursor:pointer;transition:.15s}
+.option .letter{font-weight:800;color:var(--blue);min-width:22px}
+.option.selected{border-color:var(--blue);background:#eaf3ff;box-shadow:inset 0 0 0 1px var(--blue)}
+.option:focus-visible,button:focus-visible{outline:3px solid #8dbbff;outline-offset:2px}
+.submit,.restart,.modal button{border:0;border-radius:12px;padding:14px 18px;font:inherit;font-weight:800;cursor:pointer}
+.submit{width:100%;background:#16734a;color:white;font-size:17px;margin:15px 0 24px}
+.result-top{background:#fff;border-radius:18px;padding:24px 16px;text-align:center;margin-top:16px;border:1px solid #e1e8f0}
+.result-top h2{color:var(--navy);margin:0 0 8px}
+.score{font-size:42px;font-weight:900;color:var(--blue);line-height:1.25}
+.performance{font-size:19px;font-weight:800;margin-top:8px}
+.review-title{font-size:20px;color:var(--navy);margin:22px 2px 10px}
+.review{border-radius:14px;padding:15px;margin:11px 0;border:1.5px solid}
+.review.correct{background:#edfff4;border-color:#83d6a5}
+.review.wrong{background:#fff0f0;border-color:#e7a0a0}
+.review.blank{background:#fff8e7;border-color:#e8ca79}
+.review .answerline{margin-top:6px}
+.status{font-weight:850;margin-top:8px}
+.correct .status{color:var(--green)} .wrong .status{color:var(--red)} .blank .status{color:var(--yellow)}
+.restart{width:100%;background:var(--blue);color:white;margin:16px 0 26px}
+.hidden{display:none!important}
+.modal-backdrop{position:fixed;inset:0;background:#10182899;display:flex;align-items:center;justify-content:center;padding:18px;z-index:10}
+.modal{background:#fff;border-radius:17px;padding:22px;max-width:420px;width:100%;box-shadow:0 20px 60px #0003}
+.modal h3{margin:0 0 8px;color:#9a5b00}
+.modal p{margin:8px 0 17px}
+.modal button{background:var(--blue);color:#fff;width:100%}
+footer{text-align:center;color:#8491a3;font-size:12px;padding:4px 0 20px}
+@media(min-width:600px){.wrap{padding:22px}.question{padding:20px 22px}.options{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section id="quizPage">
+    <div class="sticky-shell"><header><h1>পঞ্চম শ্রেণি</h1><div class="brand" style="font-size:19px;font-weight:800;margin-top:5px">বাংলাদেশ ও বিশ্বপরিচয়</div><div class="brand" style="margin-top:4px">অধ্যায় ১-৩</div><div class="brand" style="font-weight:800;margin-top:7px">বহুনির্বাচনি প্রশ্ন (MCQ)</div><div class="brand" style="margin-top:5px">📚 pschoolbd</div></header>
+    <div class="meta"><div class="progress" id="progress">মোট প্রশ্ন: ৩০টি</div><div class="timer" id="timer">⏱️ 10:00</div></div></div>
+    <main id="questions"></main>
+    <button class="submit" id="submitBtn">✅ SUBMIT &amp; SEE RESULT</button>
+  </section>
+  <section id="resultPage" class="hidden">
+    <header><h1>পঞ্চম শ্রেণি</h1><div class="brand" style="font-size:19px;font-weight:800;margin-top:5px">বাংলাদেশ ও বিশ্বপরিচয়</div><div class="brand" style="margin-top:4px">অধ্যায় ১-৩</div><div class="brand" style="font-weight:800;margin-top:7px">বহুনির্বাচনি প্রশ্ন (MCQ)</div><div class="brand" style="margin-top:5px">📚 pschoolbd</div><div class="brand" style="margin-top:9px">আপনার পরীক্ষার ফলাফল</div></header>
+    <div class="result-top"><h2>🏆 QUIZ RESULT</h2><div class="score" id="score">0 / 30</div><div id="performance" class="performance"></div><div id="summary" class="progress"></div></div>
+    <h2 class="review-title">📋 Answer Review</h2>
+    <div id="reviewList"></div>
+    <button class="restart" id="restartBtn">🔄 আবার পরীক্ষা দিন</button>
+  </section>
+  <footer>© P School BD · Keep Learning, Keep Growing</footer>
+</div>
+<div id="modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal"><h3 id="modalTitle">⚠️ কিছু প্রশ্নের উত্তর বাকি আছে!</h3><p id="modalText"></p><button id="modalClose">ঠিক আছে</button></div>
+</div>
+<script>
+const quiz = [
+{q:"কোনো নির্দিষ্ট স্থানের স্বল্প সময়ের বায়ুমণ্ডলীয় অবস্থাকে কী বলে?",o:["জলবায়ু","আবহাওয়া","ঋতু","আর্দ্রতা"],a:1},
+{q:"বাংলাদেশের জুন-জুলাই মাসে বাতাসে কিসের পরিমাণ বেশি থাকে?",o:["ধুলিকণা","কার্বন","আর্দ্রতা","কুয়াশা"],a:2},
+{q:"ডিসেম্বর ও জানুয়ারি মাসে বাংলাদেশে কোন ঋতু অনুভূত হয়?",o:["গ্রীষ্ম","বর্ষা","শরৎ","শীত"],a:3},
+{q:"নিচের কোনটি জীবাশ্ম জ্বালানি নয়?",o:["কয়লা","প্রাকৃতিক গ্যাস","খনিজ তেল","বায়ুপ্রবাহ"],a:3},
+{q:"এসি ও ফ্রিজ থেকে নির্গত ক্ষতিকর গ্যাস পরিবেশের কী ক্ষতি করে?",o:["পরিবেশ ও জলবায়ুর","বিদ্যুতের","পানির","মাটির"],a:0},
+{q:"পৃথিবীর তাপমাত্রা বৃদ্ধির ফলে মেরু অঞ্চলে কী ঘটছে?",o:["বরফ জমছে","বরফ গলছে","বৃষ্টি বাড়ছে","শীত বাড়ছে"],a:1},
+{q:"জলবায়ু পরিবর্তনের ফলে কৃষিজমিতে কোন পানি প্রবেশ করে ক্ষতি করছে?",o:["বৃষ্টির পানি","নদীর পানি","সমুদ্রের লবণাক্ত পানি","ভূগর্ভস্থ পানি"],a:2},
+{q:"ভূগর্ভস্থ পানির স্তর নিচে নেমে যাওয়ার একটি কারণ কী?",o:["অধিক গাছ লাগানো","অধিক পানি ব্যবহার","নদী খনন","বন্যা"],a:1},
+{q:"ইটভাটার ধোয়া কিসের জন্য ক্ষতিকর?",o:["মাছের জন্য","পাথরের জন্য","বায়ুমণ্ডলের জন্য","চাঁদের জন্য"],a:2},
+{q:"কোনো স্থানের সাধারণত ৩০-৪০ বছরের আবহাওয়ার গড় অবস্থাকে কী বলে?",o:["আবহাওয়া","জলবায়ু সহিষ্ণুতা","জলবায়ু","বায়ুর আর্দ্রতা"],a:2},
+{q:"একটি নির্দিষ্ট সময়ে কোনো স্থানের আকাশ ও বায়ুমণ্ডলের সাময়িক অবস্থাকে কী বলে?",o:["জলবায়ু","পরিবেশ","আবহাওয়া","জলবায়ু পরিবর্তন"],a:2},
+{q:"বাংলাদেশের জলবায়ু সাধারণত কোন দুটি মাসে বেশি শুষ্ক থাকে?",o:["জুন ও জুলাই","মার্চ ও এপ্রিল","ডিসেম্বর ও জানুয়ারি","সেপ্টেম্বর ও অক্টোবর"],a:2},
+{q:"বায়ুমণ্ডলে কোন গ্যাসের মাত্রা বৃদ্ধিতে গ্রিনহাউস প্রভাব সৃষ্টি হয়?",o:["অক্সিজেন","নাইট্রোজেন","হাইড্রোজেন","কার্বন ডাই-অক্সাইড"],a:3},
+{q:"কোনটি গ্রিনহাউস গ্যাস নয়?",o:["মিথেন","জলীয় বাষ্প","অক্সিজেন","কার্বন ডাই-অক্সাইড"],a:2},
+{q:"জলবায়ু পরিবর্তনের প্রধান মানবসৃষ্ট কারণ কোনটি?",o:["আগ্নেয়গিরির অগ্ন্যুৎপাত","জীবাশ্ম জ্বালানি দহন","সৌরশক্তির তারতম্য","পৃথিবীর কক্ষপথ পরিবর্তন"],a:1},
+{q:"কোন নৃগোষ্ঠীর সমাজ মাতৃতান্ত্রিক?",o:["সাঁওতাল","ম্রো","গারো","ওঁরাও"],a:2},
+{q:"গারোদের ঐতিহ্যবাহী পোশাকের নাম কী?",o:["ওয়ান্নাং","ফুং মারুং","দকবান্দা","ফুটি"],a:2},
+{q:"ওঁরাওদের প্রধান উৎসবের নাম কী?",o:["কারাম","মাঘ মেলা","ওয়ানগালা","বৈসাবি"],a:0},
+{q:"খাসি সমাজে অতিথিদের আপ্যায়নে কী ব্যবহার করা হয়?",o:["মিষ্টি","পান-সুপারি ও চা","ফুল","মাংস"],a:1},
+{q:"ম্রোদের প্রধান চাষাবাদ পদ্ধতির নাম কী?",o:["ধান চাষ","মই চাষ","জুম চাষ","মৎস্য চাষ"],a:2},
+{q:"সাঁওতালদের প্রধান বসতি এলাকা কোনটি?",o:["বান্দরবান","দিনাজপুর","সিলেট","কক্সবাজার"],a:1},
+{q:"ওঁরাওদের প্রধান খাবার কী?",o:["রুটি","ফলমূল","ভাত","খিচুড়ি"],a:2},
+{q:"গারোদের নিজস্ব ভাষার নাম কী?",o:["কুরুখ","আচিক বা গারো ভাষা","সাদরী","সাঁওতালি"],a:1},
+{q:"কোন নৃগোষ্ঠীর ভাষার নিজস্ব লিখিত রূপ আছে?",o:["গারো","ম্রো","ওঁরাও","খাসি"],a:1},
+{q:"কোন সমাজে নারীরা পরিবার ও সম্পত্তির উত্তরাধিকারী হন?",o:["ওঁরাও","সাঁওতাল","খাসি","ম্রো"],a:2},
+{q:"গারোদের নিজস্ব ভাষার নাম ‘আচিক’ বা ‘পারো ভাষা’, এটি কোন ভাষা পরিবারের অংশ?",o:["ইন্দো-ইউরোপীয়","দ্রাবিড়","চীন-তিব্বতীয়","অস্ট্রো-এশিয়াটিক"],a:2},
+{q:"ম্রোদের প্রধান চাষাবাদ পদ্ধতি ‘জুম চাষ’-এ সাধারণত কোন ধরনের ফসল ফলানো হয়?",o:["ধান ও গম","আলু ও ভুট্টা","ধান ও সবজি","চা ও তামাক"],a:2},
+{q:"সাঁওতালরা তাদের প্রধান উৎসব হিসেবে কী পালন করে?",o:["কারাম","ওয়ানগালা","সোহরাই","বিশ্বু"],a:2},
+{q:"ওঁরাওদের প্রধান খাবার ভাত ছাড়াও তারা খেয়ে থাকে কী?",o:["চা","কফি","শাকসবজি","ডাবের জল"],a:2},
+{q:"কোন নৃগোষ্ঠীর নারীরা ‘কাজিম পিন’ নামক পোশাক পরিধান করে?",o:["গারো","ওঁরাও","সাঁওতাল","খাসি"],a:3}
+];
+const letters=["ক","খ","গ","ঘ"];
+let answers=[],remaining=600,interval=null,finished=false;
+const $=id=>document.getElementById(id);
+function renderQuestions(){
+  $("questions").innerHTML=quiz.map((item,i)=>`
+    <article class="question" id="q${i}">
+      <div class="qhead">প্রশ্ন ${i+1}</div><div class="qtext">${item.q}</div>
+      <div class="options">${item.o.map((opt,j)=>`<button type="button" class="option ${answers[i]===j?'selected':''}" data-q="${i}" data-a="${j}" aria-pressed="${answers[i]===j}"><span class="letter">${letters[j]})</span><span>${opt}</span></button>`).join("")}</div>
+    </article>`).join("");
+  $("progress").textContent=`মোট প্রশ্ন: ${quiz.length}টি · উত্তর দিয়েছেন: ${answers.filter(x=>x!==null).length}টি`;
+}
+$("questions").addEventListener("click",e=>{
+  const b=e.target.closest(".option");if(!b||finished)return;
+  const qi=Number(b.dataset.q),ai=Number(b.dataset.a);answers[qi]=ai;renderQuestions();
+});
+function startTimer(){
+  clearInterval(interval);remaining=600;finished=false;updateTimer();
+  interval=setInterval(()=>{remaining--;updateTimer();if(remaining<=0){clearInterval(interval);finishQuiz(true);}},1000);
+}
+function updateTimer(){
+  const m=String(Math.floor(remaining/60)).padStart(2,"0"),s=String(remaining%60).padStart(2,"0");
+  $("timer").textContent=`⏱️ ${m}:${s}`;$("timer").classList.toggle("warning",remaining<=60);
+}
+function submitQuiz(){
+  if(finished)return;
+  const missing=answers.map((a,i)=>a===null?i+1:null).filter(x=>x!==null);
+  if(missing.length){
+    $("modalText").textContent=`প্রশ্ন ${missing.join(", ")}-এর উত্তর দেওয়া হয়নি। সব প্রশ্নের উত্তর দিয়ে আবার Submit করুন।`;
+    $("modal").classList.remove("hidden");return;
+  }
+  finishQuiz(false);
+}
+function finishQuiz(auto){
+  if(finished)return;finished=true;clearInterval(interval);
+  const score=answers.reduce((n,a,i)=>n+(a===quiz[i].a?1:0),0);
+  $("score").textContent=`${score} / ${quiz.length}`;
+  $("performance").textContent=score===30?"🌟 অসাধারণ!":score>=16?"👏 খুব ভালো!":score>=10?"👍 ভালো চেষ্টা!":"💪 আরও চেষ্টা করো, তুমি পারবে!";
+  const correct=score,wrong=answers.filter((a,i)=>a!==null&&a!==quiz[i].a).length,blank=answers.filter(a=>a===null).length;
+  $("summary").textContent=`সঠিক: ${correct} · ভুল: ${wrong} · উত্তরহীন: ${blank}${auto?" · সময় শেষ — স্বয়ংক্রিয়ভাবে জমা হয়েছে":""}`;
+  $("reviewList").innerHTML=quiz.map((item,i)=>{
+    const a=answers[i],isCorrect=a===item.a,cls=a===null?"blank":isCorrect?"correct":"wrong";
+    let detail=a===null?`<div class="answerline">⚠️ উত্তর দেওয়া হয়নি</div>`:
+      isCorrect?`<div class="answerline">আপনার উত্তর: ${letters[a]}) ${item.o[a]}</div>`:
+      `<div class="answerline">❌ আপনার উত্তর: ${letters[a]}) ${item.o[a]}</div>`;
+    if(!isCorrect)detail+=`<div class="answerline">✅ সঠিক উত্তর: ${letters[item.a]}) ${item.o[item.a]}</div>`;
+    return `<article class="review ${cls}"><div class="qhead">প্রশ্ন ${i+1}</div><div class="qtext">${item.q}</div>${detail}<div class="status">${a===null?"⚠️ উত্তর দেওয়া হয়নি":isCorrect?"✅ সঠিক উত্তর":"❌ ভুল উত্তর"}</div></article>`;
+  }).join("");
+  $("quizPage").classList.add("hidden");$("resultPage").classList.remove("hidden");window.scrollTo(0,0);
+}
+function restart(){
+  clearInterval(interval);answers=Array(quiz.length).fill(null);$("resultPage").classList.add("hidden");$("quizPage").classList.remove("hidden");
+  renderQuestions();window.scrollTo(0,0);startTimer();
+}
+$("submitBtn").addEventListener("click",submitQuiz);
+$("modalClose").addEventListener("click",()=>$("modal").classList.add("hidden"));
+$("modal").addEventListener("click",e=>{if(e.target===$("modal"))$("modal").classList.add("hidden")});
+$("restartBtn").addEventListener("click",restart);
+answers=Array(quiz.length).fill(null);renderQuestions();startTimer();
+</script>
+</body>
+</html>
